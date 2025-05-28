@@ -6,6 +6,7 @@ interface QuizStore {
   answers: Record<string, number>;
   current: number;
   setItems: (items: Item[]) => void;
+  setAnswers: (answers: Record<string, number>) => void;
   setAnswer: (id: string, choice: number) => void;
   next: () => void;
   reset: () => void;
@@ -17,6 +18,8 @@ export const useQuizStore = create<QuizStore>((set) => ({
   current: 0,
   
   setItems: (items) => set({ items }),
+  
+  setAnswers: (answers) => set({ answers }),
   
   setAnswer: (id, choice) => 
     set((state) => ({

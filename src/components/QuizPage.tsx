@@ -1,219 +1,209 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchItems } from '../utils/fetchItems';
 import type { Item } from '../types';
-import { calculateScores, type StrengthScore } from '../utils/calculateScores';
-import { strengthTips } from '../utils/strengthMeta';
+import { useQuizStore } from '../store/useQuizStore';
 
 export function QuizPage() {
+  const navigate = useNavigate();
+  const { setItems: storeSetItems, setAnswers: storeSetAnswers } = useQuizStore();
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [showResults, setShowResults] = useState(false);
-  const [strengths, setStrengths] = useState<StrengthScore[]>([]);
-  
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchItems()
-      .then(data => {
-        console.log('Loaded items:', data);
-        setItems(data);
+    const loadItems = async () => {
+      try {
+        const loadedItems = await fetchItems();
+        setItems(loadedItems);
         setIsLoading(false);
-      })
-      .catch(err => {
-        console.error('Error loading items:', err);
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load quiz items');
         setIsLoading(false);
-      });
+      }
+    };
+    loadItems();
   }, []);
 
-  if (error) {
-    return (
-      <div className="p-8 max-w-2xl mx-auto text-center">
-        <div className="bg-red-50 p-8 rounded-2xl">
-          <h1 className="text-3xl font-bold mb-6 text-red-600">エラーが発生しました</h1>
-          <p className="text-red-500 mb-8">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-red-600 text-white py-3 px-8 rounded-xl text-lg font-medium hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl"
-          >
-            再読み込み
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const progress = Object.keys(answers).length;
+  const isQuizComplete = progress === items.length && progress > 0;
+
+  const handleAnswer = (itemId: string, value: number) => {
+    const newAnswers = { ...answers, [itemId]: value };
+    setAnswers(newAnswers);
+  };
 
   if (isLoading) {
     return (
-      <div className="p-8 max-w-2xl mx-auto text-center">
-        <h1 className="text-3xl font-bold mb-8 text-blue-900">読み込み中...</h1>
-        <div className="w-full h-2 bg-blue-100 rounded-full overflow-hidden">
-          <div className="h-full bg-blue-500 animate-pulse" style={{ width: '100%' }} />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
   }
 
-  const handleAnswer = (itemId: string, value: number) => {
-    setAnswers(prev => {
-      const newAnswers = { ...prev, [itemId]: value };
-      console.log('Updated answers:', newAnswers);
-      return newAnswers;
-    });
-  };
-
-  const calculateResults = () => {
-    console.log('Calculating results with answers:', answers);
-    console.log('Items:', items);
-    const results = calculateScores(answers, items);
-    console.log('Calculated results:', results);
-    setStrengths(results);
-    setShowResults(true);
-  };
-
-  if (showResults) {
+  if (error) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-blue-900 mb-4">あなたの強み分析結果</h1>
-          <p className="text-xl text-blue-600">あなたのAI時代を生き抜くための強みを分析しました</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {strengths.map((strength: StrengthScore, index: number) => (
-            <div key={strength.id} className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium mb-2">#{index + 1}</span>
-                  <h3 className="text-2xl font-bold text-blue-900">{strength.name}</h3>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-3xl font-bold text-blue-500">{strength.score}</span>
-                  <span className="text-sm text-blue-400">点</span>
-                </div>
-              </div>
-              <p className="text-gray-700 text-lg mb-6 leading-relaxed">{strengthTips[strength.id]}</p>
-              <div className="relative pt-4">
-                <div className="flex justify-between text-sm text-blue-400 mb-2">
-                  <span>0</span>
-                  <span>5</span>
-                  <span>10</span>
-                </div>
-                <div className="w-full bg-blue-100 rounded-full h-3">
-                  <div
-                    className="bg-blue-500 h-3 rounded-full transition-all duration-1000 relative"
-                    style={{ width: `${(strength.score / 10) * 100}%` }}
-                  >
-                    <span className="absolute -right-1 -top-1 w-5 h-5 bg-white rounded-full border-4 border-blue-500"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="text-center mt-12">
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
           <button
-            onClick={() => {
-              setAnswers({});
-              setShowResults(false);
-            }}
-            className="inline-flex items-center justify-center bg-blue-500 text-white text-lg font-medium py-4 px-8 rounded-xl hover:bg-blue-600 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-            </svg>
-            もう一度診断する
+            Retry
           </button>
         </div>
       </div>
     );
   }
 
-  const answeredCount = Object.keys(answers).length;
-  const totalCount = items.length;
-  const progress = (answeredCount / totalCount) * 100;
-  const isQuizComplete = answeredCount === totalCount;
-
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-2">AIストファイ</h1>
-      <p className="text-gray-600 mb-4">AI時代の新しいあなたの強み分析</p>
-      <div className="mb-8">
-        <div className="flex justify-between text-sm text-gray-600 mb-2">
-          <span>進捗状況</span>
-          <span>{answeredCount} / {totalCount} 問</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+    <div className="p-8 max-w-4xl mx-auto">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-blue-900 mb-4">あなたのAI時代の強みを診断</h1>
+        <p className="text-xl text-blue-600">以下の質問に答えて、あなたの強みを発見しましょう</p>
       </div>
-      <div className="space-y-6">
-        {items.map((item, index) => (
-          <div key={item.id} className="p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center">
-                <span className="text-4xl font-bold text-blue-500 mr-3">Q{index + 1}</span>
-                <span className="text-sm font-medium px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full">
-                  {item.type === 'likert' ? '評価質問' : '状況判断問題'}
-                </span>
-              </div>
-              <div className="text-sm text-blue-400">{index + 1} / {items.length}</div>
+
+      <div className="space-y-12">
+        {items.map((item) => (
+          <div key={item.id} className="bg-white p-8 rounded-2xl shadow-lg">
+            <div className="flex items-center mb-6">
+              <span className="text-lg font-semibold text-blue-600 mr-4">問{items.indexOf(item) + 1}</span>
+              <h2 className="text-2xl font-bold text-blue-900">{item.text}</h2>
             </div>
-            <p className="text-xl mb-8 leading-relaxed">{item.text}</p>
-            {item.type === 'likert' ? (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center text-sm font-medium text-blue-600">
-                  <div>全く当てはまらない</div>
-                  <div>非常に当てはまる</div>
-                </div>
-                <div className="flex justify-between items-center space-x-4">
-                  {[1, 2, 3, 4, 5].map(value => (
-                    <button
-                      key={value}
-                      className={`w-16 h-16 rounded-2xl font-bold text-lg transition-all transform hover:scale-105 ${answers[item.id] === value
-                        ? 'bg-blue-500 text-white ring-4 ring-blue-200 ring-offset-2 shadow-lg'
-                        : 'bg-blue-50 hover:bg-blue-100 text-blue-900'}`}
-                      onClick={() => handleAnswer(item.id, value)}
-                    >
-                      {value}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {item.options?.map((option, index) => (
-                  <button
+
+            <div className="space-y-4">
+              {item.type === 'sjt' ? (
+                // 状況判断テストの選択肢
+                (item.options as string[]).map((option, index) => (
+                  <label
                     key={index}
-                    className={`w-full text-left p-6 rounded-xl transition-all transform hover:scale-[1.02] ${answers[item.id] === index
-                      ? 'bg-blue-500 text-white ring-4 ring-blue-200 ring-offset-2 shadow-lg'
-                      : 'bg-blue-50 hover:bg-blue-100 text-blue-900'}`}
-                    onClick={() => handleAnswer(item.id, index)}
+                    className={`
+                      block p-4 rounded-xl border-2 transition-all cursor-pointer
+                      ${answers[item.id] === index
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-200'
+                      }
+                    `}
                   >
                     <div className="flex items-center">
-                      <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-white bg-opacity-20 mr-4 text-lg font-bold">
-                        {String.fromCharCode(65 + index)}
-                      </span>
+                      <input
+                        type="radio"
+                        name={`question-${item.id}`}
+                        value={index}
+                        checked={answers[item.id] === index}
+                        onChange={() => handleAnswer(item.id, index)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`
+                          w-5 h-5 border-2 rounded-full mr-3 flex items-center justify-center
+                          ${answers[item.id] === index
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300'
+                          }
+                        `}
+                      >
+                        {answers[item.id] === index && (
+                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                        )}
+                      </div>
                       <span className="text-lg">{option}</span>
                     </div>
-                  </button>
-                ))}
-              </div>
-            )}
+                  </label>
+                ))
+              ) : (
+                // 5段階評価の選択肢
+                [1, 2, 3, 4, 5].map((value) => (
+                  <label
+                    key={value}
+                    className={`
+                      block p-4 rounded-xl border-2 transition-all cursor-pointer
+                      ${answers[item.id] === value
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-200'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name={`question-${item.id}`}
+                        value={value}
+                        checked={answers[item.id] === value}
+                        onChange={() => handleAnswer(item.id, value)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`
+                          w-5 h-5 border-2 rounded-full mr-3 flex items-center justify-center
+                          ${answers[item.id] === value
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300'
+                          }
+                        `}
+                      >
+                        {answers[item.id] === value && (
+                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                        )}
+                      </div>
+                      <span className="text-lg flex items-center">
+                        <span className="mr-2">{value}</span>
+                        <span className="text-gray-600 text-base">
+                          {value === 1 ? '全く当てはまらない' :
+                           value === 2 ? 'あまり当てはまらない' :
+                           value === 3 ? 'どちらとも言えない' :
+                           value === 4 ? 'やや当てはまる' :
+                           '非常に当てはまる'}
+                        </span>
+                      </span>
+                    </div>
+                  </label>
+                ))
+              )}
+            </div>
           </div>
         ))}
       </div>
-      {isQuizComplete && (
-        <button
-          onClick={calculateResults}
-          className="mt-8 w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors font-medium text-lg"
-        >
-          診断結果を見る
-        </button>
-      )}
+
+      <div className="mt-12">
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <div className="flex justify-between text-sm text-gray-500 mb-2">
+            <span>{progress} / {items.length} 回答済み</span>
+            <span>{Math.round((progress / items.length) * 100)}%</span>
+          </div>
+          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-500 transition-all duration-500"
+              style={{ width: `${(progress / items.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => {
+              storeSetItems(items);
+              storeSetAnswers(answers);
+              navigate('/result');
+            }}
+            disabled={!isQuizComplete}
+            className={`
+              py-4 px-8 rounded-xl text-lg font-medium transition-all transform
+              ${isQuizComplete
+                ? 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 shadow-lg hover:shadow-xl'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }
+            `}
+          >
+            {isQuizComplete ? '結果を見る' : '全ての質問に答えてください'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
