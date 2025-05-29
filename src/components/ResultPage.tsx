@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useQuizStore } from '../store/useQuizStore';
 import { calculateScores } from '../utils/calculateScores';
 import { strengthTips } from '../utils/strengthMeta';
@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { Item } from '../types';
 
 export function ResultPage() {
-  const navigate = useNavigate();
+  const history = useHistory();
   const { answers } = useQuizStore();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,7 @@ export function ResultPage() {
   useEffect(() => {
     // 未回答なら/quizへ
     if (Object.keys(answers).length === 0) {
-      navigate('/quiz');
+      history.push('/quiz');
       return;
     }
 
@@ -26,7 +26,7 @@ export function ResultPage() {
       setItems(items);
       setLoading(false);
     });
-  }, [answers, navigate]);
+  }, [answers, history]);
 
   if (loading) {
     return (

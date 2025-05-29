@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { fetchItems } from '../utils/fetchItems';
 import type { Item } from '../types';
 import { useQuizStore } from '../store/useQuizStore';
 
 export function QuizPage() {
-  const navigate = useNavigate();
+  const history = useHistory();
   const { setItems: storeSetItems, setAnswers: storeSetAnswers } = useQuizStore();
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -189,7 +189,7 @@ export function QuizPage() {
             onClick={() => {
               storeSetItems(items);
               storeSetAnswers(answers);
-              navigate('/result');
+              history.push('/result');
             }}
             disabled={!isQuizComplete}
             className={`
