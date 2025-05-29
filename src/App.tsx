@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { QuizPage } from './components/QuizPage';
 import { ResultPage } from './components/ResultPage';
 import ninjaGirls from './assets/ninja-girls.jpg';
@@ -60,10 +60,10 @@ function App() {
             <div className="w-32 h-1 bg-blue-500 mx-auto rounded-full"></div>
           </header>
           <main className="max-w-4xl mx-auto px-4 pb-16">
-            <Routes>
-              <Route path="/" element={<QuizPage />} />
-              <Route path="/result" element={<ResultPage />} />
-            </Routes>
+            <Switch>
+              <Route exact path="/" component={QuizPage} />
+              <Route path="/result" component={ResultPage} />
+            </Switch>
           </main>
           <footer className="bg-white py-8 border-t border-blue-100">
             <div className="max-w-4xl mx-auto px-4 text-center text-blue-500">
