@@ -1,7 +1,5 @@
 import { z } from 'zod';
 import type { Item } from '../types';
-import items from '../assets/items.json';
-
 const strengthKeySchema = z.enum([
   'AIDIR', 'TOOLC', 'IDEAS', 'EMBRI', 'FLOWM',
   'AMBIG', 'MICRO', 'FOCUS', 'ANTIF', 'DATAR'
@@ -28,5 +26,10 @@ const itemSchema = z.discriminatedUnion('type', [
 const itemsSchema = z.array(itemSchema);
 
 export async function fetchItems(): Promise<Item[]> {
-  return itemsSchema.parse(items);
+  const response = await fetch('./items.json');
+  if (!response.ok) {
+    throw new Error('Failed to fetch items');
+  }
+  const data = await response.json();
+  return itemsSchema.parse(data);
 }
