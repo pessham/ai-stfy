@@ -3,7 +3,7 @@ import type { ErrorInfo, ReactNode } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { QuizPage } from './components/QuizPage';
 import { ResultPage } from './components/ResultPage';
-import ninjaGirls from '../public/ninja-girls.jpg';
+import ninjaGirls from './assets/ninja-girls.jpg';
 
 interface Props {
   children?: ReactNode;
