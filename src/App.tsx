@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QuizPage } from './components/QuizPage';
 import { ResultPage } from './components/ResultPage';
 import ninjaGirls from './assets/ninja-girls.jpg';
