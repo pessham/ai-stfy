@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/components/quizpage.tsx","./src/components/radarstrength.tsx","./src/components/resultpage.tsx","./src/store/usequizstore.ts","./src/utils/calculatescores.ts","./src/utils/fetchitems.ts","./src/utils/strengthmeta.ts"],"version":"5.8.3"}

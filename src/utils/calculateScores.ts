@@ -7,7 +7,12 @@ export interface StrengthScore {
   score: number;
 }
 
-export function calculateScores(answers: Record<string, number>, items: Item[]): StrengthScore[] {
+interface CalculateScoresResult {
+  sorted: StrengthScore[];
+  scoreMap: Record<StrengthKey, number>;
+}
+
+export function calculateScores(answers: Record<string, number>, items: Item[]): CalculateScoresResult {
   const scores: Record<StrengthKey, number> = {
     AIDIR: 0, TOOLC: 0, IDEAS: 0, EMBRI: 0, FLOWM: 0,
     AMBIG: 0, MICRO: 0, FOCUS: 0, ANTIF: 0, DATAR: 0
@@ -28,11 +33,13 @@ export function calculateScores(answers: Record<string, number>, items: Item[]):
     }
   });
 
-  return Object.entries(scores)
+  const sorted = Object.entries(scores)
     .map(([id, score]) => ({
       id: id as StrengthKey,
       name: strengthName[id as StrengthKey],
       score
     }))
     .sort((a, b) => b.score - a.score);
+
+  return { sorted, scoreMap: scores };
 }
