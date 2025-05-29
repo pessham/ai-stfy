@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { StrengthScore } from '../utils/calculateScores';
 
 ChartJS.register(
   RadialLinearScale,
@@ -20,17 +21,19 @@ ChartJS.register(
 );
 
 interface Props {
-  labels: string[];
-  scores: number[]; // 0-10
+  scores: StrengthScore[];
 }
 
-export const RadarStrength: FC<Props> = ({ labels, scores }) => {
+export const RadarStrength: FC<Props> = ({ scores }) => {
+  const labels = scores.map(s => s.name);
+  const values = scores.map(s => s.score);
+
   const data = {
     labels,
     datasets: [
       {
         label: 'あなたの強みスコア',
-        data: scores,
+        data: values,
         fill: true,
         backgroundColor: 'rgba(59, 130, 246, 0.2)',
         borderColor: 'rgb(59, 130, 246)',
@@ -73,4 +76,4 @@ export const RadarStrength: FC<Props> = ({ labels, scores }) => {
       <Radar data={data} options={options} />
     </div>
   );
-};
+}

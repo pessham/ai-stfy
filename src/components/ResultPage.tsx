@@ -1,86 +1,94 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuizStore } from '../store/useQuizStore';
 import { calculateScores } from '../utils/calculateScores';
-import { strengthName, strengthTips } from '../utils/strengthMeta';
+import { strengthTips } from '../utils/strengthMeta';
 import { RadarStrength } from './RadarStrength';
 import { classifyType } from '../utils/typeClassifier';
+import { fetchItems } from '../utils/fetchItems';
+import { useEffect, useState } from 'react';
+import { Item } from '../types';
 
 export function ResultPage() {
   const navigate = useNavigate();
-  const { items, answers, reset } = useQuizStore();
-  
-  if (items.length === 0) {
-    navigate('/');
-    return null;
+  const { answers } = useQuizStore();
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 未回答なら/quizへ
+    if (Object.keys(answers).length === 0) {
+      navigate('/quiz');
+      return;
+    }
+
+    // 問題を取得
+    fetchItems().then(items => {
+      setItems(items);
+      setLoading(false);
+    });
+  }, [answers, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-2xl font-bold">計算中...</div>
+      </div>
+    );
   }
 
-  const { sorted: results, scoreMap } = calculateScores(answers, items);
+  // 得点計算
+  const { sorted, scoreMap } = calculateScores(answers, items);
   const userType = classifyType(scoreMap);
-  const labels = results.map(({ id }) => strengthName[id]);
-  const scores = results.map(({ score }) => Math.min(10, Math.round((score / 25) * 10))); // 25点満点を10点満点に変換
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">診断結果</h1>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-center">
+          あなたのAI時代における強み
+        </h1>
 
-        {/* タイプカード */}
-        <div className="mt-8 p-6 border rounded-2xl bg-indigo-50 space-y-4">
-          <div className="flex items-center space-x-4">
-            <div className="text-4xl">{userType.icon}</div>
-            <div>
-              <h2 className="text-2xl font-bold">{userType.name}</h2>
-              <p className="text-gray-700">{userType.catchCopy}</p>
-            </div>
+        {/* タイプ表示 */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <span className="text-4xl mr-2">{userType.icon}</span>
+            <h2 className="text-2xl font-bold">{userType.name}</h2>
           </div>
-
-          <div className="flex items-start space-x-4 bg-white p-4 rounded-xl">
-            <img
-              src={userType.imagePath}
-              alt={userType.characterName}
-              className="w-24 h-24 object-cover rounded-lg"
-            />
-            <div>
-              <div className="font-bold text-gray-700">{userType.characterName}</div>
-              <div className="text-sm text-gray-500 mb-2">{userType.series}</div>
-              <p className="text-sm text-gray-600">{userType.description}</p>
-            </div>
-          </div>
+          <p className="text-lg text-center mb-4">{userType.catchCopy}</p>
         </div>
 
-        <h1 className="text-3xl font-bold text-center mb-8">あなたの強み分析結果</h1>
-        
         {/* レーダーチャート */}
-        <div className="mb-8">
-          <RadarStrength labels={labels} scores={scores} />
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h3 className="text-xl font-bold mb-4 text-center">
+            スキルレーダー
+          </h3>
+          <RadarStrength scores={sorted} />
         </div>
 
-        {/* ランキング & Tips */}
-        <div className="space-y-4">
-          {results.map(({ id, score }, index) => (
-            <div key={id} className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-2xl font-bold text-gray-400">#{index + 1}</span>
-                <h2 className="text-xl font-semibold">{strengthName[id]}</h2>
-                <span className="ml-auto text-lg font-medium text-blue-600">{Math.min(10, Math.round((score / 25) * 10))} / 10</span>
+        {/* 詳細スコア */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-xl font-bold mb-4 text-center">
+            詳細スコア
+          </h3>
+          <div className="space-y-4">
+            {sorted.map(({ id, name, score }) => (
+              <div key={id} className="border-b pb-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-medium">{name}</span>
+                  <span className="text-sm text-gray-600">{score}</span>
+                </div>
+                <p className="text-sm text-gray-500">{strengthTips[id]}</p>
               </div>
-
-              <p className="text-gray-600 leading-relaxed">
-                {strengthTips[id]}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="mt-8 text-center">
+        {/* 戻るボタン */}
+        <div className="text-center mt-8">
           <button
-            onClick={() => {
-              reset();
-              navigate('/');
-            }}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            onClick={() => navigate('/')}
+            className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
           >
-            もう一度診断する
+            トップに戻る
           </button>
         </div>
       </div>
