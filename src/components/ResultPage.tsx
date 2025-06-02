@@ -48,6 +48,13 @@ export function ResultPage() {
   const userType = classifyType(scoreMap);
   const typeImageSrc = userType ? `/img/${userType.id.toLowerCase()}_${userType.imageNamePart}.png` : ''; // 例: /img/orch_image.png
 
+  // デバッグ用ログ
+  console.log('[ResultPage] answers:', JSON.stringify(answers));
+  console.log('[ResultPage] items length:', items ? items.length : 'undefined'); // items全体ではなく長さをログ
+  console.log('[ResultPage] scoreMap:', JSON.stringify(scoreMap));
+  console.log('[ResultPage] userType:', JSON.stringify(userType));
+  console.log('[ResultPage] typeImageSrc:', typeImageSrc);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
