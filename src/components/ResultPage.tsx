@@ -1,6 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { useQuizStore } from '../store/useQuizStore'; // clearAnswers を追加
 import { calculateScores } from '../utils/calculateScores';
+import type { StrengthKey } from '../types';
 import { strengthTips } from '../utils/strengthMeta';
 import { RadarStrength } from './RadarStrength';
 import { classifyType } from '../utils/typeClassifier';

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Item } from '../types';
+import type { Item } from '../types';
 
 interface QuizStore {
   items: Item[];
