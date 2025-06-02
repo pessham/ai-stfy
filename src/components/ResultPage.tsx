@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { useQuizStore } from '../store/useQuizStore';
+import { useQuizStore } from '../store/useQuizStore'; // clearAnswers を追加
 import { calculateScores } from '../utils/calculateScores';
 import { strengthTips } from '../utils/strengthMeta';
 import { RadarStrength } from './RadarStrength';
@@ -10,7 +10,7 @@ import { Item } from '../types';
 
 export function ResultPage() {
   const history = useHistory();
-  const { answers } = useQuizStore();
+  const { answers, clearAnswers } = useQuizStore(); // clearAnswers を取得
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -85,7 +85,7 @@ export function ResultPage() {
         {/* 戻るボタン */}
         <div className="text-center mt-8">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => { clearAnswers(); history.push('/'); }}
             className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
           >
             トップに戻る

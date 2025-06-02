@@ -1,54 +1,55 @@
-# React + TypeScript + Vite
+# AIストファイ - AI時代の新しい強み診断ツール
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AIストファイは、あなたの強みを分析し、SF作品のキャラクターと比較することで、あなたの特徴をより深く理解するための診断ツールです。
 
-Currently, two official plugins are available:
+## 特徴
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- AIパワードの質問分析
+- レーダーチャートによる視覚的な強み表現
+- SF作品のキャラクターとの比較分析
+- 詳細な強み解説とアドバイス
 
-## Expanding the ESLint configuration
+## 技術スタック
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React + TypeScript
+- Vite
+- Chart.js
+- Tailwind CSS
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 開発環境のセットアップ
+
+1. リポジトリをクローン:
+```bash
+git clone https://github.com/yourusername/strength-mvp.git
+cd strength-mvp
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. 依存関係のインストール:
+```bash
+npm install
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3. 開発サーバーの起動:
+```bash
+npm run dev
+```
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
+4. ビルドの実行:
+```bash
+npm run build
+```
+
+## デプロイ
+
+このプロジェクトはNetlifyを使用して自動デプロイされます。mainブランチへのプッシュが自動的にデプロイをトリガーします。
+
+## ライセンス
+
+MIT License
+
+## 貢献
+
+バグ報告や機能リクエストは、GitHubのIssuesでお願いします。
   },
 })
 ```
