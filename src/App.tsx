@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
-import { QuizPage } from './components/QuizPage';
-import { ResultPage } from './components/ResultPage';
-import ninjaGirls from './assets/ninja-girls.jpg';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom'; // Switch, Route を追加
+// import { StrengthAssessment } from './components/StrengthAssessment'; // StrengthAssessment は一旦コメントアウト
+import { QuizPage } from './components/QuizPage'; // QuizPage をインポート
+import { ResultPage } from './components/ResultPage'; // ResultPage をインポート
 
 interface Props {
   children?: ReactNode;
@@ -56,12 +56,11 @@ function App() {
           <header className="max-w-4xl mx-auto px-4 pt-12 pb-8 text-center">
             <h1 className="text-5xl font-bold text-blue-900 mb-4 tracking-tight">AIストファイ</h1>
             <p className="text-xl text-blue-600 font-medium mb-8">AI時代の新しいあなたの強み分析</p>
-            <img src={ninjaGirls} alt="Ninja Girls" className="w-80 mx-auto mb-8 rounded-xl shadow-xl transform hover:scale-105 transition-transform duration-300" />
             <div className="w-32 h-1 bg-blue-500 mx-auto rounded-full"></div>
           </header>
           <main className="max-w-4xl mx-auto px-4 pb-16">
             <Switch>
-              <Route exact path="/" component={QuizPage} />
+              <Route path="/" exact component={QuizPage} />
               <Route path="/result" component={ResultPage} />
             </Switch>
           </main>

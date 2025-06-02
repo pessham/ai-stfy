@@ -1,25 +1,24 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/ai-stfy/',
+  base: '/',
   server: {
     port: 3000,
     strictPort: false,
-    open: true
+    open: true,
   },
   build: {
     outDir: 'dist',
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: undefined,
-        assetFileNames: 'assets/[name]-[hash][extname]',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js'
+        entryFileNames: `assets/main-bundle-v4-[hash].js`,
+        chunkFileNames: `assets/vendor-chunk-v4-[hash].js`,
+        assetFileNames: `assets/static-asset-v4-[hash].[ext]`
       }
     }
-  }
-})
+  },
+});

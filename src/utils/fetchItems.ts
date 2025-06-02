@@ -26,7 +26,7 @@ const itemSchema = z.discriminatedUnion('type', [
 const itemsSchema = z.array(itemSchema);
 
 export async function fetchItems(): Promise<Item[]> {
-  const response = await fetch('/ai-stfy/items.json');
+  const response = await fetch('/items.json');
   if (!response.ok) {
     throw new Error('Failed to fetch items');
   }

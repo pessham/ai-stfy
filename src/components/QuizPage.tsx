@@ -66,6 +66,7 @@ export function QuizPage() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-blue-900 mb-4">あなたのAI時代の強みを診断</h1>
         <p className="text-xl text-blue-600">以下の質問に答えて、あなたの強みを発見しましょう</p>
+        <img src="/ninja-girls.jpg" alt="Ninja Girls" className="mt-8 mx-auto rounded-lg shadow-md" style={{ maxWidth: '100%', maxHeight: '400px' }} />
       </div>
 
       <div className="space-y-12">
@@ -77,94 +78,49 @@ export function QuizPage() {
             </div>
 
             <div className="space-y-4">
-              {item.type === 'sjt' ? (
-                // 状況判断テストの選択肢
-                (item.options as string[]).map((option, index) => (
-                  <label
-                    key={index}
-                    className={`
-                      block p-4 rounded-xl border-2 transition-all cursor-pointer
-                      ${answers[item.id] === index
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-200'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name={`question-${item.id}`}
-                        value={index}
-                        checked={answers[item.id] === index}
-                        onChange={() => handleAnswer(item.id, index)}
-                        className="sr-only"
-                      />
-                      <div
-                        className={`
-                          w-5 h-5 border-2 rounded-full mr-3 flex items-center justify-center
-                          ${answers[item.id] === index
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300'
-                          }
-                        `}
-                      >
-                        {answers[item.id] === index && (
-                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                        )}
-                      </div>
-                      <span className="text-lg">{option}</span>
+              {(item.type === 'sjt' ? (item.options as string[]) : [
+                'とてもそう思う',
+                'ややそう思う',
+                'どちらともいえない',
+                'あまりそう思わない',
+                'まったくそう思わない'
+              ]).map((option, index) => (
+                <label
+                  key={index}
+                  className={`
+                    block p-4 rounded-xl border-2 transition-all cursor-pointer
+                    ${answers[item.id] === (item.type === 'sjt' ? index : 4 - index)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-blue-200'
+                    }
+                  `}
+                >
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      name={`question-${item.id}`}
+                      value={index}
+                      checked={answers[item.id] === (item.type === 'sjt' ? index : 4 - index)}
+                      onChange={() => handleAnswer(item.id, item.type === 'sjt' ? index : 4 - index)}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`
+                        w-5 h-5 border-2 rounded-full mr-3 flex items-center justify-center
+                        ${answers[item.id] === (item.type === 'sjt' ? index : 4 - index)
+                          ? 'border-blue-500 bg-blue-500'
+                          : 'border-gray-300'
+                        }
+                      `}
+                    >
+                      {answers[item.id] === (item.type === 'sjt' ? index : 4 - index) && (
+                        <div className="w-2.5 h-2.5 bg-white rounded-full" />
+                      )}
                     </div>
-                  </label>
-                ))
-              ) : (
-                // 5段階評価の選択肢
-                [1, 2, 3, 4, 5].map((value) => (
-                  <label
-                    key={value}
-                    className={`
-                      block p-4 rounded-xl border-2 transition-all cursor-pointer
-                      ${answers[item.id] === value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-200'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name={`question-${item.id}`}
-                        value={value}
-                        checked={answers[item.id] === value}
-                        onChange={() => handleAnswer(item.id, value)}
-                        className="sr-only"
-                      />
-                      <div
-                        className={`
-                          w-5 h-5 border-2 rounded-full mr-3 flex items-center justify-center
-                          ${answers[item.id] === value
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300'
-                          }
-                        `}
-                      >
-                        {answers[item.id] === value && (
-                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
-                        )}
-                      </div>
-                      <span className="text-lg flex items-center">
-                        <span className="mr-2">{value}</span>
-                        <span className="text-gray-600 text-base">
-                          {value === 1 ? '全く当てはまらない' :
-                           value === 2 ? 'あまり当てはまらない' :
-                           value === 3 ? 'どちらとも言えない' :
-                           value === 4 ? 'やや当てはまる' :
-                           '非常に当てはまる'}
-                        </span>
-                      </span>
-                    </div>
-                  </label>
-                ))
-              )}
+                    <span className="text-lg">{option}</span>
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
         ))}
