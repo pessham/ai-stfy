@@ -60,7 +60,22 @@ function App() {
           </header>
           <main className="max-w-4xl mx-auto px-4 pb-16">
             <Switch>
-              <Route path="/" exact component={QuizPage} />
+              <Route path="/" exact>
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-8 text-blue-800">AI時代のあなたの強みを診断しましょう</h2>
+                  <p className="text-lg mb-8 text-gray-700">
+                    AIストファイは、AI時代におけるあなたの強みを分析し、キャリア形成のヒントを提供します。
+                    10の質問に答えるだけで、あなたの強みタイプが明らかになります。
+                  </p>
+                  <button
+                    onClick={() => window.location.hash = '/quiz'}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-xl shadow-lg transition-all transform hover:scale-105"
+                  >
+                    診断を始める
+                  </button>
+                </div>
+              </Route>
+              <Route path="/quiz" component={QuizPage} />
               <Route path="/result" component={ResultPage} />
             </Switch>
           </main>
